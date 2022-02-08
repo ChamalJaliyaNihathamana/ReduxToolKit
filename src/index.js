@@ -1,25 +1,17 @@
-import { produce } from "immer";
+import store from "./store";
+import { bugAdded, bugRemoved, bugResolved } from "./actions";
 
-let book = { title: "Harry Potter" };
+// calls when ever state changes
+const unsubscribe = store.subscribe(() => {
+  // place where we refresh the view
+  console.log("Store Changed !", store.getState());
+});
 
-function publish(book) {
-  return produce(book, (draftBook) => {
-    draftBook.isPublished = true;
-  });
-}
+store.dispatch(bugAdded("Bug 1"));
 
-let updated = publish(book);
-debugger;
+store.dispatch(bugResolved(1));
 
-// Using Immutable
+// we don't get notify about current state
+// unsubscribe();
 
-// import { Map } from "immutable";
-
-// let book = Map({ title: "Harry Potter" });
-
-// function publish(book) {
-//   return book.set("isPublished", true);
-// }
-
-// publish(book);
-// debugger;
+store.dispatch(bugRemoved(1));

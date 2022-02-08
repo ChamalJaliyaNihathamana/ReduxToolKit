@@ -1,56 +1,31 @@
-//  ActionTypes
-const BUG_ADDED = "BUG_ADD";
-const BUG_REMOVED = "BUG_REMOVE";
-const BUG_RESOLVED = "BUG_RESOLVE";
+import { createAction, createReducer } from "@reduxjs/toolkit";
 
 // Actions ( Action Creators )
-export const bugAdded = (description) => ({
-    type: BUG_ADDED,
-    payload: {
-      description
-    },
-  });
-  
-  export const bugRemoved = (id) => ({
-    type: BUG_REMOVED,
-    payload: {
-      id
-    },
-  });
-  
-  export const bugResolved = (id) => ({
-    type: BUG_RESOLVED,
-    payload: {
-      // id: id, -> short hand syntax
-      id
-    },
-  });
+export const bugAdded = createAction("BUG_ADD");
+export const bugRemoved = createAction("BUG_REMOVE");
+export const bugResolved = createAction("BUG_RESOLVE");
 
 //   Reducer ( should be the default export)
 
 let lastId = 0;
 
-export default function reducer(state = [], action) {
-  switch (action.type) {
-    case BUG_ADDED:
-      return [
-        ...state,
-        {
-          id: ++lastId,
-          description: action.payload.description,
-          resolved: false,
-        },
-      ];
+// has two paras i) initial state ii) object that maps actions to function that handles actions
+export default createReducer([], {
+  // key : value  -> key = actions value = functions
+  [bugAdded.type]: (bugs, action) => {
+    bugs.push({
+      id: ++lastId,
+      description: action.payload.description,
+      resolved: false,
+    });
+  },
 
-    case BUG_REMOVED:
-      return state.filter((bug) => bug.id !== action.payload.id);
+  [bugResolved.type]: (bugs, action) => {
+    const index = bugs.findIndex((bug) => bug.id === action.payload.id);
+    bugs[index].resolved = true;
+  },
 
-    case BUG_RESOLVED:
-      return state.map((bug) =>
-        bug.id !== action.payload.id ? bug : { ...bug, resolved: true }
-      );
-
-    default:
-      state;
-  }
-}
+  [bugRemoved.type]: (bugs, action) => {
+    bugs.filter((bug) => bug.id !== action.payload.id);
+  },
+});

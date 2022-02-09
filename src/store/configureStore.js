@@ -1,9 +1,19 @@
 import { configureStore } from "@reduxjs/toolkit";
-import reducer from "./bugs";
+import reducer from "./reducer";
+import logger from "./middleware/logger";
+import toast from "./middleware/toast";
 
 export default function () {
   // root reducer is used here
-  return configureStore({ reducer });
+  // we can add middleware function as appending args
+  return configureStore({
+    reducer,
+    middleware: (getDefaultMiddleware) => [
+      ...getDefaultMiddleware(),
+      logger,
+      toast,
+    ],
+  });
 }
 
 // store is obj consists of
